@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:series_app/series_details_page.dart';
 import 'api_service.dart';
 import 'database_helper.dart';
 
@@ -115,32 +116,55 @@ class _HomePageState extends State<HomePage> {
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: filteredSerials.length,
-        itemBuilder: (context, index) {
-          final serial = filteredSerials[index];
-          return Card(
-            margin: const EdgeInsets.all(8.0),
-            child: ListTile(
-              leading: serial['image'] != null
-                  ? Image.network(
-                serial['image'],
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              )
-                  : const Icon(Icons.broken_image),
-              title: Text(serial['name']),
-              subtitle: Text("Status: ${serial['status']}"),
-              trailing: PopupMenuButton<String>(
-                onSelected: (status) => updateStatus(serial['id'], status),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: "watched", child: Text("Watched")),
-                  const PopupMenuItem(value: "not watched", child: Text("Not Watched")),
-                  const PopupMenuItem(value: "want to watch", child: Text("Want to Watch")),
-                ],
+          itemBuilder: (context, index) {
+            final serial = filteredSerials[index];
+            return Card(
+              margin: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: serial['image'] != null
+                    ? Image.network(
+                  serial['image'],
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                )
+                    : const Icon(Icons.broken_image),
+                title: Text(serial['name']),
+                subtitle: Text("Status: ${serial['status']}"),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (status) => updateStatus(serial['id'], status),
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: "watched", child: Text("Watched")),
+                    const PopupMenuItem(value: "not watched", child: Text("Not Watched")),
+                    const PopupMenuItem(value: "want to watch", child: Text("Want to Watch")),
+                  ],
+                ),
+                onTap: () async {
+                  try {
+                    final details = await apiService.fetchShowDetails(serial['id']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SerialDetailPage(
+                          name: serial['name'],
+                          imageUrl: serial['image'],
+                          description: details['description'],
+                          rating: details['rating'],
+                          id: serial['id'],
+                          status: serial['status'],
+                        ),
+                      ),
+                    ).then((_) => loadSerials()); // Reload serials after returning
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to load details: $e')),
+                    );
+                  }
+                },
               ),
-            ),
-          );
-        },
+            );
+          }
+
       ),
     );
   }
