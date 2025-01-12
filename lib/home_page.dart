@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                           status: serial['status'],
                         ),
                       ),
-                    ).then((_) => loadSerials()); // Reload serials after returning
+                    ).then((_) => loadSerials());
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to load details: $e')),

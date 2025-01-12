@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'reminder_page.dart';
 
 class SerialDetailPage extends StatefulWidget {
   final String name;
   final String? imageUrl;
   final String description;
   final dynamic rating;
-  final int id; // Unique identifier for the serial
-  final String status; // Current status of the serial
+  final int id;
+  final String status;
 
   const SerialDetailPage({
     Key? key,
@@ -24,13 +25,13 @@ class SerialDetailPage extends StatefulWidget {
 }
 
 class _SerialDetailPageState extends State<SerialDetailPage> {
-  late String currentStatus; // Local copy of the status
+  late String currentStatus;
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
   @override
   void initState() {
     super.initState();
-    currentStatus = widget.status; // Initialize with the passed status
+    currentStatus = widget.status;
   }
 
   Future<void> updateStatus(String status) async {
@@ -97,6 +98,21 @@ class _SerialDetailPageState extends State<SerialDetailPage> {
                   DropdownMenuItem(value: "not watched", child: Text("Not Watched")),
                   DropdownMenuItem(value: "want to watch", child: Text("Want to Watch")),
                 ],
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReminderPage(
+                        id: widget.id,
+                        name: widget.name,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Set Reminder to Watch Later'),
               ),
             ],
           ),
