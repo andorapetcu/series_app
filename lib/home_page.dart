@@ -82,22 +82,26 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightGreen[50],
       appBar: AppBar(
+        backgroundColor: Colors.lightGreen[50],
         title: TextField(
           onChanged: updateSearchQuery,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: "Search shows...",
             border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(color: Colors.lightGreen[50]),
+            filled: true,
+            fillColor: Colors.lightGreen[600],
           ),
-          style: const TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(color: Colors.lightGreen[50], fontSize: 18),
         ),
         actions: [
           DropdownButton<String>(
             value: selectedStatus,
-            dropdownColor: Colors.white,
+            dropdownColor: Colors.lightGreen[600],
             underline: const SizedBox(),
-            icon: const Icon(Icons.filter_list, color: Colors.white),
+            icon: Icon(Icons.filter_list, color: Colors.lightGreen[600]),
             onChanged: (value) {
               if (value != null) {
                 updateSelectedStatus(value);
@@ -116,55 +120,55 @@ class _HomePageState extends State<HomePage> {
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: filteredSerials.length,
-          itemBuilder: (context, index) {
-            final serial = filteredSerials[index];
-            return Card(
-              margin: const EdgeInsets.all(8.0),
-              child: ListTile(
-                leading: serial['image'] != null
-                    ? Image.network(
-                  serial['image'],
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                )
-                    : const Icon(Icons.broken_image),
-                title: Text(serial['name']),
-                subtitle: Text("Status: ${serial['status']}"),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (status) => updateStatus(serial['id'], status),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(value: "watched", child: Text("Watched")),
-                    const PopupMenuItem(value: "not watched", child: Text("Not Watched")),
-                    const PopupMenuItem(value: "want to watch", child: Text("Want to Watch")),
-                  ],
-                ),
-                onTap: () async {
-                  try {
-                    final details = await apiService.fetchShowDetails(serial['id']);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SerialDetailPage(
-                          name: serial['name'],
-                          imageUrl: serial['image'],
-                          description: details['description'],
-                          rating: details['rating'],
-                          id: serial['id'],
-                          status: serial['status'],
-                        ),
-                      ),
-                    ).then((_) => loadSerials());
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to load details: $e')),
-                    );
-                  }
-                },
+        itemBuilder: (context, index) {
+          final serial = filteredSerials[index];
+          return Card(
+            margin: const EdgeInsets.all(10.0),
+            color: Colors.lime[200],
+            child: ListTile(
+              leading: serial['image'] != null
+                  ? Image.network(
+                serial['image'],
+                width: 70,
+                height: 70,
+                fit: BoxFit.contain,
+              )
+                  : const Icon(Icons.broken_image),
+              title: Text(serial['name']),
+              subtitle: Text("Status: ${serial['status']}"),
+              trailing: PopupMenuButton<String>(
+                onSelected: (status) => updateStatus(serial['id'], status),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: "watched", child: Text("Watched")),
+                  const PopupMenuItem(value: "not watched", child: Text("Not Watched")),
+                  const PopupMenuItem(value: "want to watch", child: Text("Want to Watch")),
+                ],
               ),
-            );
-          }
-
+              onTap: () async {
+                try {
+                  final details = await apiService.fetchShowDetails(serial['id']);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SerialDetailPage(
+                        name: serial['name'],
+                        imageUrl: serial['image'],
+                        description: details['description'],
+                        rating: details['rating'],
+                        id: serial['id'],
+                        status: serial['status'],
+                      ),
+                    ),
+                  ).then((_) => loadSerials());
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to load details: $e')),
+                  );
+                }
+              },
+            ),
+          );
+        },
       ),
     );
   }

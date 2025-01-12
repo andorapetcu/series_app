@@ -28,7 +28,7 @@ class _ReminderPageState extends State<ReminderPage> {
           channelKey: 'basic_channel',
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for reminders',
-          defaultColor: Color(0xFF9D50DD),
+          defaultColor: Colors.lightGreen[600],
           ledColor: Colors.white,
           icon: 'resource://drawable/ic_notification',
         ),
@@ -76,7 +76,7 @@ class _ReminderPageState extends State<ReminderPage> {
     PermissionStatus notificationPermissionStatus = await Permission.notification.status;
     if (notificationPermissionStatus != PermissionStatus.granted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Notificările sunt dezactivate în setările dispozitivului.')),
+        const SnackBar(content: Text('Notifications are not on')),
       );
       return;
     }
@@ -92,7 +92,7 @@ class _ReminderPageState extends State<ReminderPage> {
 
       if (scheduledDateTime.isBefore(DateTime.now())) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data și ora selectată trebuie să fie în viitor!')),
+          const SnackBar(content: Text('Please choose a date that is in the future!')),
         );
         return;
       }
@@ -114,17 +114,6 @@ class _ReminderPageState extends State<ReminderPage> {
         });
       });
 
-      // AwesomeNotifications().createNotification(
-      //   content: NotificationContent(
-      //     id: 10,
-      //     channelKey: 'basic_channel',
-      //     title: 'Reminder',
-      //     body: 'Este timpul să îți amintești de acest lucru!',
-      //   ),
-      // ).then((_) {
-      //   print("Immediate notification was sent!");
-      // });
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Reminder scheduled successfully!')),
       );
@@ -140,33 +129,71 @@ class _ReminderPageState extends State<ReminderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Set Reminder')),
+      backgroundColor: Colors.green[50],
+      appBar: AppBar(
+        backgroundColor: Colors.green[600],
+        title: const Text('Set Reminder'),
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              title: Text(selectedDate == null
-                  ? 'Select Date'
-                  : DateFormat.yMd().format(selectedDate!)),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () => selectDate(context),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              title: Text(selectedTime == null
-                  ? 'Select Time'
-                  : selectedTime!.format(context)),
-              trailing: const Icon(Icons.access_time),
-              onTap: () => selectTime(context),
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: scheduleReminder,
-              child: const Text('Set Reminder'),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () => selectDate(context),
+                child: Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  color: Colors.green[100],
+                  child: ListTile(
+                    title: Text(
+                      selectedDate == null
+                          ? 'Select Date'
+                          : DateFormat.yMd().format(selectedDate!),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    trailing: Icon(Icons.calendar_today, color: Colors.lightGreenAccent[600]),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => selectTime(context),
+                child: Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  color: Colors.green[100],
+                  child: ListTile(
+                    title: Text(
+                      selectedTime == null
+                          ? 'Select Time'
+                          : selectedTime!.format(context),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    trailing: Icon(Icons.access_time, color: Colors.lightGreenAccent[600]),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Center(
+                child: ElevatedButton(
+                  onPressed: scheduleReminder,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen[600],
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Set Reminder',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
